@@ -1,3 +1,4 @@
+-- src/main.lua
 local Transformer = require("transformer")
 local Settings = require("settings")
 local Utils = require("utils")
@@ -13,8 +14,12 @@ end
 
 local function main()
     printBanner()
-    
-    local args = {...}
+
+    local args = {}
+    for i = 1, #arg do
+        table.insert(args, arg[i])
+    end
+
     if #args < 2 then
         print("Usage: lua main.lua <input_file> <output_file> [options]")
         return
@@ -27,7 +32,7 @@ local function main()
         print("Error: Input file not found!")
         return
     end
-
+    
     local settings = Settings.load()
     
     local success, err = pcall(function()
