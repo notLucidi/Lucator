@@ -1,27 +1,21 @@
 local Parser = require("parser")
-local Encoder = require("encoder")
+local MainObfuscator = require("obfuscator.mainObfuscator")
 
 local Transformer = {}
 
-function Transformer:obfuscate(inputFile, outputFile)
+function Transformer:obfuscate(inputFile, outputFile, settings)
     local content = Parser:readFile(inputFile)
-
-    local encryptedContent, key = Encoder:encryptString(content)
     
-    local obfuscatedCode = string.format([[
-local function decode(str, key)
-    -- [Masukkan fungsi dekripsi di sini]
-    -- Fungsi ini akan ditambahkan nanti
-end
-
-local encrypted = %q
-local key = %q
-local decoded = decode(encrypted, key)
-load(decoded)()
-    ]], encryptedContent, key)
+    local obfuscatedCode = MainObfuscator:obfuscate(content, settings)
     
     Parser:writeFile(outputFile, obfuscatedCode)
-    print("Obfuscation complete!")
+    
+    local originalSize = #content
+    local obfuscatedSize = #obfuscatedCode
+    
+    print(string.format("Original size: %d bytes", originalSize))
+    print(string.format("Obfuscated size: %d bytes", obfuscatedSize))
+    print(string.format("Ratio: %.2f%%", (obfuscatedSize/originalSize)*100))
 end
 
 return Transformer
